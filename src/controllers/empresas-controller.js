@@ -1,21 +1,27 @@
 import EmpresaRepository from "../models/empresa-model.js"
 
 async function findAll(req, res) {
-    const empresas = await EmpresaRepository.findAll();
-    res.json(empresas);
+    try {
+        const empresas = await EmpresaRepository.findAll();
+        if (!empresas) {
+            return res.status(400).send({ error: 'User not found' });
+        }
+        res.json(empresas);
+
+    } catch (e) {
+        return res.status.send({ error: 'Error in findAll Empresas' })
+    }
+
 }
-function findEmpresaByCnpj(req, res) {
+async function findEmpresaByCnpj(req, res) {
     EmpresaRepository.findByPk(req.params.cnpj)
-        .then((result) => res.json(result))
+        .then((result) => res.json(result)).catch(error)
+        .catch(error => { console.log('Erro na operacao findEmpresaByCnpj: ' + error.message) })
 }
 
 function addEmpresa(req, res) {
-    EmpresaRepository.create({
-        cnpj: req.body.cnpj,
-        razao_social: req.body.razao_social,
-        quantidade_func: req.body.quantidade_func,
-        ramo: req.body.ramo,
-    }).then((result) => res.json(result))
+    EmpresaRepository.create(req.body).then((result) => res.json(result))
+        .catch(error => { console.log('Erro na operacao addEmpresa: ' + error.message) })
 };
 
 async function updateEmpresa(req, res) {
@@ -33,6 +39,7 @@ async function updateEmpresa(req, res) {
 
     EmpresaRepository.findByPk(req.params.cnpj)
         .then((result) => res.json(result))
+        .catch(error => { console.log('Erro na operacao addEmpresa: ' + error.message) })
 };
 
 async function deleteEmpresa(req, res) {
@@ -42,7 +49,9 @@ async function deleteEmpresa(req, res) {
         }
     });
 
-    EmpresaRepository.findAll().then((result) => res.json(result));
+    EmpresaRepository.findAll().then((result) => res.json(result))
+    .catch(error => { console.log('Erro na operacao addEmpresa: ' + error.message) })
+
 };
 
 export default { findAll, addEmpresa, findEmpresaByCnpj, updateEmpresa, deleteEmpresa }

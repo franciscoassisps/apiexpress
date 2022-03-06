@@ -1,4 +1,7 @@
 import ColaboradorRepository from "../models/colaborador-model.js"
+import { cpf } from "cpf-cnpj-validator"
+
+const valida = cpf
 
 async function findAll(req, res) {
   try {
@@ -14,34 +17,33 @@ async function findAll(req, res) {
 }
 
 function findColaboradorByCpf(req, res) {
-  ColaboradorRepository.findByPk(req.params.cpf)
+  ColaboradorRepository.findByPk(req.params.id)
     .then((result) => res.json(result))
     .catch(error => { console.log('Erro na operacao findColaboradorByCpf: ' + error.message) })
 }
 
-function addColaborador(req, res) {
+async function addColaborador(req, res) {
   try {
-    ColaboradorRepository.create({
-      cpf: req.body.cpf,
-      nome: req.body.nome,
-      email: req.body.email,
-      salario: req.body.salario,
-      data_admissao: req.body.data_admissao,
-      data_demissao: req.body.data_demissao
-    }).then((result) => res.json(result))
+    const { cpf, email } = req.body;
+    //const user = await ColaboradorRepository.findOne({ where: { email } })
+    console.log('URRRUUEUTOAQUI', cpf, valida.isValid(cpf))
+    if (!valida.isValid(cpf))
+      return res.status(400).send({ error: 'Invalid cpf' });
+    if (await ColaboradorRepository.findOne({ where: { cpf } }) || await ColaboradorRepository.findOne({ where: { email } }))
+      return res.status(400).send({ error: "User already exists" });
+    const colaborador = await ColaboradorRepository.create(
+      {
+        cpf: req.body.cpf,
+        nome: req.body.nome,
+        email: req.body.email,
+        salario: req.body.salario,
+        data_admissao: req.body.data_admissao,
+        data_demissao: req.body.data_demissao
+      }).then((colaborador) => res.json(colaborador))
   } catch (e) {
     console.log(e)
   }
-
 };
-
-async function autenticate(req, res) {
-  const { cpf, email } = req.body
-  const user = await ColaboradorRepository.findOne({ cpf, email });
-  if (!user) {
-    return res.status(400).send({ error: 'User not found' });
-  }
-}
 
 async function updateColaborador(req, res) {
   try {
@@ -55,7 +57,7 @@ async function updateColaborador(req, res) {
     },
       {
         where: {
-          cpf: req.params.cpf
+          cpf: req.params.id
         }
       });
 
@@ -70,7 +72,7 @@ async function deleteColaborador(req, res) {
   try {
     await ColaboradorRepository.destroy({
       where: {
-        cpf: req.params.cpf
+        cpf: req.params.id
       }
     });
 

@@ -19,9 +19,9 @@ export default db.define("colaboradores", {
         type: Sequelize.INTEGER.UNSIGNED,
     },
     data_admissao: {
-        type: Sequelize.DATEONLY
+        type: Sequelize.STRING
     },
     data_demissao: {
-        type: Sequelize.DATEONLY
+        type: Sequelize.STRING
     },
 });
