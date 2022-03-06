@@ -25,7 +25,6 @@ function findColaboradorByCpf(req, res) {
 async function addColaborador(req, res) {
   try {
     const { cpf, email } = req.body;
-    console.log('URRRUUEUTOAQUI', cpf, valida.isValid(cpf))
     if (!valida.isValid(cpf))
       return res.status(400).send({ error: 'Invalid cpf' });
     if (await ColaboradorRepository.findOne({ where: { cpf } }) || await ColaboradorRepository.findOne({ where: { email } }))
