@@ -25,21 +25,12 @@ function findColaboradorByCpf(req, res) {
 async function addColaborador(req, res) {
   try {
     const { cpf, email } = req.body;
-    //const user = await ColaboradorRepository.findOne({ where: { email } })
     console.log('URRRUUEUTOAQUI', cpf, valida.isValid(cpf))
     if (!valida.isValid(cpf))
       return res.status(400).send({ error: 'Invalid cpf' });
     if (await ColaboradorRepository.findOne({ where: { cpf } }) || await ColaboradorRepository.findOne({ where: { email } }))
       return res.status(400).send({ error: "User already exists" });
-    const colaborador = await ColaboradorRepository.create(
-      {
-        cpf: req.body.cpf,
-        nome: req.body.nome,
-        email: req.body.email,
-        salario: req.body.salario,
-        data_admissao: req.body.data_admissao,
-        data_demissao: req.body.data_demissao
-      }).then((colaborador) => res.json(colaborador))
+    const colaborador = await ColaboradorRepository.create(req.body).then((colaborador) => res.json(colaborador))
   } catch (e) {
     console.log(e)
   }

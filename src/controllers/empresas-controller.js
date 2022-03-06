@@ -1,4 +1,7 @@
 import EmpresaRepository from "../models/empresa-model.js"
+import { cnpj } from "cpf-cnpj-validator"
+
+const valida = cnpj;
 
 async function findAll(req, res) {
     try {
@@ -19,7 +22,12 @@ async function findEmpresaByCnpj(req, res) {
         .catch(error => { console.log('Erro na operacao findEmpresaByCnpj: ' + error.message) })
 }
 
-function addEmpresa(req, res) {
+async function addEmpresa(req, res) {
+    const { cnpj } = req.body;
+    if (!valida.isValid(cnpj))
+        return res.status(400).send({ error: 'Invalid cnpj' });
+    if (await EmpresaRepository.findOne({ where: { cnpj } }))
+        return res.status(400).send({ error: "Company already exists" });
     EmpresaRepository.create(req.body).then((result) => res.json(result))
         .catch(error => { console.log('Erro na operacao addEmpresa: ' + error.message) })
 };
@@ -50,7 +58,7 @@ async function deleteEmpresa(req, res) {
     });
 
     EmpresaRepository.findAll().then((result) => res.json(result))
-    .catch(error => { console.log('Erro na operacao addEmpresa: ' + error.message) })
+        .catch(error => { console.log('Erro na operacao addEmpresa: ' + error.message) })
 
 };
 

@@ -26,10 +26,10 @@ routes.get('/users/:id', users.findUserById);
 routes.post('/users', users.registerUser);
 routes.put('/users/:id', users.updateUser);
 routes.delete('/users/:id', users.deleteUser);
-routes.post('/login', users.autenticate);
+routes.post('/autentica', users.autenticate);
 
 routes.use(authMeddleware)
-routes.get('/',login.get)
+routes.get('/login',login.get)
 
 
 export { routes as default };
